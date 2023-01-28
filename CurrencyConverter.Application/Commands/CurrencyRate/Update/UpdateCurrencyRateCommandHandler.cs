@@ -4,7 +4,7 @@ using MediatR;
 
 namespace CurrencyConverter.Application.Commands.CurrencyRate.Update;
 
-public class UpdateCurrencyRateCommandHandler : ICommandHandler<UpdateCurrencyRateCommand, Unit>
+public class UpdateCurrencyRateCommandHandler : ICommandHandler<UpdateCurrencyRateCommand, bool>
 {
     private readonly ICurrencyRateRepository _currencyRateRepository;
 
@@ -13,11 +13,15 @@ public class UpdateCurrencyRateCommandHandler : ICommandHandler<UpdateCurrencyRa
         _currencyRateRepository = currencyRateRepository;
     }
 
-    public async Task<Unit> Handle(UpdateCurrencyRateCommand command, CancellationToken cancellationToken)
+    public async Task<bool> Handle(UpdateCurrencyRateCommand command, CancellationToken cancellationToken)
     {
         var currencyRate = await _currencyRateRepository.GetAsync(command.Id);
-        currencyRate?.UpdateData(command.RateToSell, command.RateToBuy);
 
-        return Unit.Value;
+        if (currencyRate == null) return false;
+
+        currencyRate.UpdateData(command.RateToSell, command.RateToBuy);
+        await _currencyRateRepository.SaveChangesAsync(cancellationToken);
+
+        return true;
     }
 }

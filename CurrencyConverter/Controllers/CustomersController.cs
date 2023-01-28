@@ -26,7 +26,7 @@ public class CustomersController : ControllerBase
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    [HttpGet]
+    [HttpGet("{id:guid}")]
     [ProducesResponseType(typeof(CustomerDto), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     public async Task<IActionResult> GetCustomerAsync(Guid id)
@@ -58,7 +58,7 @@ public class CustomersController : ControllerBase
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    [HttpGet("daily-limit")]
+    [HttpGet("{id:guid}/daily-limit")]
     [ProducesResponseType(typeof(decimal?), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     public async Task<IActionResult> GetDailyLimit(Guid id)

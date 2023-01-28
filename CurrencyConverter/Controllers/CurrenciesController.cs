@@ -2,8 +2,6 @@
 using CurrencyConverter.Application.Commands.Currency.Delete;
 using CurrencyConverter.Application.Commands.Currency.Update;
 using CurrencyConverter.Application.Queries.Currency;
-using CurrencyConverter.Application.Queries.Customer;
-using CurrencyConverter.Domain.CurrencyAggregate;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -44,7 +42,7 @@ public class CurrenciesController : ControllerBase
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    [HttpGet("{id}")]
+    [HttpGet("{id:guid}")]
     public async Task<IActionResult> Get(Guid id)
     {
         var currency = await _currencyQueries.GetCurrencyByIdAsync(id);
@@ -52,7 +50,7 @@ public class CurrenciesController : ControllerBase
         if (currency == null)
             return NotFound();
 
-        return Ok();
+        return Ok(currency);
     }
 
     /// <summary>
@@ -63,7 +61,10 @@ public class CurrenciesController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Post([FromBody] CreateCurrencyCommand command)
     {
-        await _mediator.Send(command);
+        var response = await _mediator.Send(command);
+
+        if (!response) return BadRequest();
+
         return Ok();
     }
 
@@ -71,11 +72,14 @@ public class CurrenciesController : ControllerBase
     /// Update Currency
     /// </summary>
     /// <param name="id"></param>
+    /// <param name="command"></param>
     /// <returns></returns>
     [HttpPut("{id:guid}")]
-    public async Task<IActionResult> Put(Guid id)
+    public async Task<IActionResult> Put(Guid id, [FromBody] UpdateCurrencyCommand command)
     {
-        await _mediator.Send(new UpdateCurrencyCommand { Id = id });
+        command.Id = id;
+        var response = await _mediator.Send(command);
+        if (!response) return NotFound();
         return Ok();
     }
 
@@ -87,7 +91,8 @@ public class CurrenciesController : ControllerBase
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id)
     {
-        await _mediator.Send(new DeleteCurrencyCommand { Id = id });
+        var response = await _mediator.Send(new DeleteCurrencyCommand { Id = id });
+        if (!response) return NotFound();
         return Ok();
     }
 }

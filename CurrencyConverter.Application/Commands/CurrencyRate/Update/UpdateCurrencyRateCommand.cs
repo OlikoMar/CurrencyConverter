@@ -3,7 +3,7 @@ using MediatR;
 
 namespace CurrencyConverter.Application.Commands.CurrencyRate.Update;
 
-public class UpdateCurrencyRateCommand : ICommand<Unit>
+public class UpdateCurrencyRateCommand : ICommand<bool>
 {
     public Guid Id { get; set; }
     public decimal RateToSell { get; set; }

@@ -1,9 +1,8 @@
 ﻿using CurrencyConverter.Infrastructure.Commands;
-using MediatR;
 
 namespace CurrencyConverter.Application.Commands.Currency.Update;
 
-public class UpdateCurrencyCommand : ICommand<Unit>
+public class UpdateCurrencyCommand : ICommand<bool>
 {
     public Guid Id { get; set; }
     public string Code { get; set; } = default!;

@@ -18,6 +18,7 @@ public class CurrencyQueries : ICurrencyQueries
 
         return new CurrencyDto
         {
+            Id = currency.Id,
             Code = currency.Code,
             Name = currency.Name,
             NameEng = currency.NameEng
@@ -30,6 +31,7 @@ public class CurrencyQueries : ICurrencyQueries
 
         return currencies.Select(currency => new CurrencyDto
         {
+            Id = currency.Id,
             Code = currency.Code,
             Name = currency.Name,
             NameEng = currency.NameEng

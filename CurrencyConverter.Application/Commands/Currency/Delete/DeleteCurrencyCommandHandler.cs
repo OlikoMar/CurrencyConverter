@@ -1,10 +1,9 @@
 ﻿using CurrencyConverter.Domain.CurrencyAggregate;
 using CurrencyConverter.Infrastructure.Commands;
-using MediatR;
 
 namespace CurrencyConverter.Application.Commands.Currency.Delete;
 
-public class DeleteCurrencyCommandHandler : ICommandHandler<DeleteCurrencyCommand, Unit>
+public class DeleteCurrencyCommandHandler : ICommandHandler<DeleteCurrencyCommand, bool>
 {
     private readonly ICurrencyRepository _currencyRepository;
 
@@ -13,14 +12,14 @@ public class DeleteCurrencyCommandHandler : ICommandHandler<DeleteCurrencyComman
         _currencyRepository = currencyRepository;
     }
 
-    public async Task<Unit> Handle(DeleteCurrencyCommand command, CancellationToken cancellationToken)
+    public async Task<bool> Handle(DeleteCurrencyCommand command, CancellationToken cancellationToken)
     {
         var currency = await _currencyRepository.FindByIdAsync(command.Id);
 
-        if (currency == null) return Unit.Value;
+        if (currency == null) return false;
         _currencyRepository.Remove(currency);
         await _currencyRepository.SaveChangesAsync(cancellationToken);
 
-        return Unit.Value;
+        return true;
     }
 }

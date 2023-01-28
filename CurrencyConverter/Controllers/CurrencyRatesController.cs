@@ -5,6 +5,7 @@ using CurrencyConverter.Application.Commands.CurrencyRate.Create;
 using CurrencyConverter.Application.Commands.CurrencyRate.Delete;
 using CurrencyConverter.Application.Commands.CurrencyRate.Update;
 using System.Net;
+using CurrencyConverter.Application.DataModels;
 using CurrencyConverter.Application.Queries.CurrencyRate;
 
 namespace CurrencyConverter.API.Controllers;
@@ -29,7 +30,7 @@ public class CurrencyRatesController : ControllerBase
     /// </summary>
     /// <returns></returns>
     [HttpGet]
-    [ProducesResponseType((int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(IEnumerable<CurrencyRateDto>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     public async Task<IActionResult> GetAllAsync()
     {
@@ -37,7 +38,7 @@ public class CurrencyRatesController : ControllerBase
 
         if (currencyRates == null)
             return NotFound();
-        return Ok();
+        return Ok(currencyRates);
     }
 
     /// <summary>
@@ -45,7 +46,8 @@ public class CurrencyRatesController : ControllerBase
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    [HttpGet("{id}")]
+    [HttpGet("{id:guid}")]
+    [ProducesResponseType(typeof(CurrencyRateDto), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> GetAsync(Guid id)
     {
         var currency = await _currencyRateQueries.GetCurrencyRateByIdAsync(id);
@@ -62,9 +64,12 @@ public class CurrencyRatesController : ControllerBase
     /// <param name="token"></param>
     /// <returns></returns>
     [HttpPost]
+    [ProducesResponseType(typeof(CurrencyRateDto), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(CurrencyRateDto), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> Post([FromBody] CreateCurrencyRateCommand command, CancellationToken token)
     {
-        await _mediator.Send(command, token);
+        var response = await _mediator.Send(command, token);
+        if (!response) return NotFound();
 
         return Ok();
     }
@@ -72,24 +77,36 @@ public class CurrencyRatesController : ControllerBase
     /// <summary>
     /// Update Currency Rate
     /// </summary>
+    /// <param name="id"></param>
     /// <param name="command"></param>
     /// <returns></returns>
-    [HttpPut]
-    public async Task<IActionResult> Put([FromBody] UpdateCurrencyRateCommand command)
+    [HttpPut("{id:guid}")]
+    [ProducesResponseType(typeof(CurrencyRateDto), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(CurrencyRateDto), (int)HttpStatusCode.OK)]
+    public async Task<IActionResult> Put(Guid id, [FromBody] UpdateCurrencyRateCommand command)
     {
-        await _mediator.Send(command);
-        return Ok();
+        command.Id = id;
+        var response = await _mediator.Send(command);
+
+        if (!response) return NotFound();
+
+        return Ok(id);
     }
 
     /// <summary>
     /// Delete Currency Rate
     /// </summary>
-    /// <param name="command"></param>
+    /// <param name="id"></param>
     /// <returns></returns>
-    [HttpDelete]
-    public async Task<IActionResult> Delete([FromBody] DeleteCurrencyRateCommand command)
+    [HttpDelete("{id:guid}")]
+    [ProducesResponseType((int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    public async Task<IActionResult> Delete(Guid id)
     {
-        await _mediator.Send(command);
-        return Ok();
+        var response = await _mediator.Send(new DeleteCurrencyRateCommand { Id = id });
+
+        if (!response) return NotFound();
+
+        return Ok(id);
     }
 }

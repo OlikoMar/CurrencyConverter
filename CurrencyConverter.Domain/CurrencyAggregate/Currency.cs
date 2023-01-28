@@ -17,4 +17,9 @@ public class Currency : BaseEntity
         Name = name;
         NameEng = nameEng;
     }
+
+    public static explicit operator Currency(string v)
+    {
+        throw new NotImplementedException();
+    }
 }

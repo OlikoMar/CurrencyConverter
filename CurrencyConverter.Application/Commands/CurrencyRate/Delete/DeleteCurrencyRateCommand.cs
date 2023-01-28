@@ -3,7 +3,7 @@ using MediatR;
 
 namespace CurrencyConverter.Application.Commands.CurrencyRate.Delete;
 
-public class DeleteCurrencyRateCommand : ICommand<Unit>
+public class DeleteCurrencyRateCommand : ICommand<bool>
 {
     public Guid Id { get; set; }
 }

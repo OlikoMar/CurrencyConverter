@@ -1,9 +1,8 @@
 ﻿using CurrencyConverter.Infrastructure.Commands;
-using MediatR;
 
 namespace CurrencyConverter.Application.Commands.Currency.Delete;
 
-public class DeleteCurrencyCommand : ICommand<Unit>
+public class DeleteCurrencyCommand : ICommand<bool>
 {
     public Guid Id { get; set; }
 }

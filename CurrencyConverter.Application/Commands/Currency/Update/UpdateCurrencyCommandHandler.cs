@@ -1,10 +1,9 @@
 ﻿using CurrencyConverter.Domain.CurrencyAggregate;
 using CurrencyConverter.Infrastructure.Commands;
-using MediatR;
 
 namespace CurrencyConverter.Application.Commands.Currency.Update;
 
-public class UpdateCurrencyCommandHandler : ICommandHandler<UpdateCurrencyCommand, Unit>
+public class UpdateCurrencyCommandHandler : ICommandHandler<UpdateCurrencyCommand, bool>
 {
     private readonly ICurrencyRepository _currencyRepository;
 
@@ -12,15 +11,15 @@ public class UpdateCurrencyCommandHandler : ICommandHandler<UpdateCurrencyComman
     {
         _currencyRepository = currencyRepository;
     }
-    public async Task<Unit> Handle(UpdateCurrencyCommand command, CancellationToken cancellationToken)
+    public async Task<bool> Handle(UpdateCurrencyCommand command, CancellationToken cancellationToken)
     {
         var currency = await _currencyRepository.FindByIdAsync(command.Id);
 
-        if (currency == null) return Unit.Value;
+        if (currency == null) return false;
 
         currency.UpdateData(command.Code, command.Name, command.NameEng);
 
         await _currencyRepository.SaveChangesAsync(cancellationToken);
-        return Unit.Value;
+        return true;
     }
 }
